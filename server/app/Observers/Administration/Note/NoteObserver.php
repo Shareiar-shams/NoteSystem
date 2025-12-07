@@ -26,6 +26,7 @@ class NoteObserver
                 'note_id' => $note->id,
                 'previous_content' => $note->getOriginal('content'),
                 'user_id' => Auth::id(),
+                'changed_at' => now(),
             ]);
         }
     }
