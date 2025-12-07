@@ -100,6 +100,43 @@
   padding: 0.35rem 0.5rem;
 }
 
+/* Draft Note Card Styling */
+.note-card.border-warning {
+  background-color: #fffbf0;
+}
+
+.note-card.border-warning .card-header {
+  border-bottom: 1px solid #ffc107;
+}
+
+/* Note Filter Tabs */
+.nav-tabs {
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.nav-tabs .nav-link {
+  color: #6c757d;
+  font-weight: 500;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  color: #495057;
+  border-color: #dee2e6;
+}
+
+.nav-tabs .nav-link.active {
+  color: #0d6efd;
+  background-color: #f8f9fa;
+  border-color: #dee2e6 #dee2e6 #fff;
+  font-weight: 600;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   #root {

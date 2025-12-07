@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, Badge } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const NoteForm = () => {
   const { id } = useParams();
@@ -11,16 +12,20 @@ const NoteForm = () => {
   const [isDraft, setIsDraft] = useState(false);
   const [tags, setTags] = useState('');
   const [workspaceId, setWorkspaceId] = useState('');
+  const [workspaces, setWorkspaces] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch workspaces
+    axios.get('/workspaces').then(res => setWorkspaces(res.data.data));
+
     if (id) {
       axios.get(`/notes/${id}`).then(res => {
         const note = res.data;
         setTitle(note.title);
         setContent(note.content);
         setType(note.type);
-        setIsDraft(note.is_draft);
+        setIsDraft(Boolean(note.is_draft));
         setTags(note.tags.map(t => t.name).join(', '));
         setWorkspaceId(note.workspace_id);
       });
@@ -37,12 +42,42 @@ const NoteForm = () => {
       workspace_id: workspaceId,
       tags: tags.split(',').map(t => t.trim()).filter(t => t), // Handle as array
     };
-    if (id) {
-      await axios.put(`/notes/${id}`, data);
-    } else {
-      await axios.post('/notes', data);
+    try {
+      if (id) {
+        await axios.put(`/notes/${id}`, data);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: 'success',
+          title: 'Note updated successfully!'
+        });
+      } else {
+        await axios.post('/notes/create', data);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: 'success',
+          title: 'Note created successfully!'
+        });
+      }
+      navigate('/private');
+    } catch (error) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: 'error',
+        title: 'Failed to save note'
+      });
     }
-    navigate('/private');
   };
 
   return (
@@ -78,8 +113,13 @@ const NoteForm = () => {
           <Form.Control value={tags} onChange={(e) => setTags(e.target.value)} />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>Workspace ID</Form.Label>
-          <Form.Control type="number" value={workspaceId} onChange={(e) => setWorkspaceId(e.target.value)} />
+          <Form.Label>Workspace</Form.Label>
+          <Form.Select value={workspaceId} onChange={(e) => setWorkspaceId(e.target.value)}>
+            <option value="">Select a workspace</option>
+            {workspaces.map(ws => (
+              <option key={ws.id} value={ws.id}>{ws.name}</option>
+            ))}
+          </Form.Select>
         </Form.Group>
         <Button variant="primary" type="submit">{id ? 'Update' : 'Create'}</Button>
       </Form>
