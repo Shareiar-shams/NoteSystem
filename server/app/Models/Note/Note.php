@@ -26,7 +26,9 @@ class Note extends Model
     // Scopes
     use NoteScopes;
 
-    protected $casts = [];
+    protected $casts = [
+        'is_draft' => 'boolean',
+    ];
 
     protected $fillable = [
         'workspace_id',
