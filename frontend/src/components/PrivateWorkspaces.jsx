@@ -51,8 +51,41 @@ const PrivateWorkspaces = () => {
   };
 
   const deleteNote = async (noteId) => {
-    await axios.delete(`/notes/${noteId}`);
-    loadNotes(selectedWorkspace); // Refresh
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action cannot be undone!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`/notes/${noteId}`);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: 'success',
+          title: 'Note deleted successfully!'
+        });
+        loadNotes(selectedWorkspace); // Refresh
+      } catch (error) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: 'error',
+          title: 'Failed to delete note'
+        });
+      }
+    }
   };
 
   const openCreateModal = () => {
