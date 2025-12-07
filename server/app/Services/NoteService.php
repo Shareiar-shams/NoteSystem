@@ -54,6 +54,10 @@ class NoteService
             $query->notDraft();
         }
 
+        if ($workspaceId = $request->query('workspace_id')) {
+            $query->where('workspace_id', $workspaceId);
+        }
+
         if ($search = $request->query('search')) {
             $query->search($search);
         }
