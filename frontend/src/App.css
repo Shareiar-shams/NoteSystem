@@ -40,3 +40,74 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Workspace Card Styles */
+.workspace-card {
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.workspace-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.workspace-card .card-header {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+}
+
+.workspace-card .card-body {
+  cursor: pointer;
+  padding: 1rem;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.workspace-card .card-footer {
+  border-top: 1px solid #e0e0e0;
+  padding: 0.75rem;
+  gap: 0.5rem;
+}
+
+/* Note Card Styles */
+.note-card {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.note-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.note-card .card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.note-card .card-footer {
+  border-top: 1px solid #e0e0e0;
+  padding: 0.75rem;
+}
+
+.note-card .card-footer .btn {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #root {
+    padding: 1rem;
+  }
+  
+  .workspace-card .card-body {
+    min-height: 50px;
+  }
+}
+
