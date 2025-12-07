@@ -37,7 +37,7 @@ class NoteController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request)
+    public function create(NoteRequest $request)
     {
         return $this->noteService->createNote($request->validated() + ['workspace_id' => $request->workspace_id], $request->tags);
     }
