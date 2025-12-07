@@ -17,21 +17,21 @@ class NoteService
      */
     public function getPublicNotes(Request $request): LengthAwarePaginator
     {
-        $query = Note::with(['workspace', 'tags'])->where('type', 'public')->where('is_draft', false);
+        $query = Note::with(['workspace', 'tags'])->public()->notDraft();
 
         if ($search = $request->query('search')) {
-            $query->where('title', 'like', "%$search%");
+            $query->search($search);
         }
 
         $sort = $request->query('sort', 'new');
         if ($sort === 'new') {
-            $query->orderBy('created_at', 'desc');
+            $query->orderByNew();
         } elseif ($sort === 'old') {
-            $query->orderBy('created_at', 'asc');
+            $query->orderByOld();
         } elseif ($sort === 'most_upvotes') {
-            $query->withCount(['votes as upvotes' => function ($q) { $q->where('vote', 'up'); }])->orderBy('upvotes', 'desc');
+            $query->orderByMostUpvotes();
         } elseif ($sort === 'downvotes') {
-            $query->withCount(['votes as downvotes' => function ($q) { $q->where('vote', 'down'); }])->orderBy('downvotes', 'desc');
+            $query->orderByDownvotes();
         }
 
         return $query->paginate(20);
@@ -42,12 +42,10 @@ class NoteService
      */
     public function getPrivateNotes(Request $request, User $user): LengthAwarePaginator
     {
-        $query = Note::with(['workspace', 'tags'])->whereHas('workspace', function (Builder $q) use ($user) {
-            $q->where('company_id', $user->company_id);
-        })->where('is_draft', false);
+        $query = Note::with(['workspace', 'tags'])->forCompany($user->company_id)->notDraft();
 
         if ($search = $request->query('search')) {
-            $query->where('title', 'like', "%$search%");
+            $query->search($search);
         }
 
         return $query->paginate(20);
@@ -90,7 +88,7 @@ class NoteService
      */
     public function getNoteHistory(Note $note)
     {
-        return $note->histories()->with('user')->orderBy('changed_at', 'desc')->get();
+        return $note->histories()->withUser()->orderedByChangedAt()->get();
     }
 
     /**
