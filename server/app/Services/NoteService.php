@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Note\Note;
 use App\Models\NoteHistory\NoteHistory;
 use App\Models\NoteVote\NoteVote;
+use App\Models\Tag\Tag;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -17,7 +18,10 @@ class NoteService
      */
     public function getPublicNotes(Request $request): LengthAwarePaginator
     {
-        $query = Note::with(['workspace', 'tags'])->public()->notDraft();
+        $query = Note::with(['workspace', 'tags'])
+            ->withCount(['votes as upvotes' => function ($q) { $q->where('vote', 'up'); }])
+            ->withCount(['votes as downvotes' => function ($q) { $q->where('vote', 'down'); }])
+            ->public()->notDraft();
 
         if ($search = $request->query('search')) {
             $query->search($search);
@@ -56,9 +60,11 @@ class NoteService
      */
     public function createNote(array $data, ?array $tags = null): Note
     {
+        unset($data['tags']);
         $note = Note::create($data);
         if ($tags) {
-            $note->tags()->sync($tags);
+            $tagIds = $this->getOrCreateTagIds($tags);
+            $note->tags()->sync($tagIds);
         }
         return $note;
     }
@@ -68,9 +74,11 @@ class NoteService
      */
     public function updateNote(Note $note, array $data, ?array $tags = null): Note
     {
+        unset($data['tags']);
         $note->update($data);
         if ($tags !== null) {
-            $note->tags()->sync($tags);
+            $tagIds = $this->getOrCreateTagIds($tags);
+            $note->tags()->sync($tagIds);
         }
         return $note;
     }
@@ -112,5 +120,21 @@ class NoteService
             ['note_id' => $note->id, 'user_id' => $user->id],
             ['vote' => $vote]
         );
+    }
+
+    /**
+     * Get or create tag IDs from tag names.
+     */
+    private function getOrCreateTagIds(array $tagNames): array
+    {
+        $tagIds = [];
+        foreach ($tagNames as $name) {
+            $tag = Tag::firstOrCreate(
+                ['name' => $name],
+                ['slug' => \Illuminate\Support\Str::slug($name)]
+            );
+            $tagIds[] = $tag->id;
+        }
+        return $tagIds;
     }
 }

@@ -39,7 +39,7 @@ class NoteController extends Controller
      */
     public function create(NoteRequest $request)
     {
-        return $this->noteService->createNote($request->validated() + ['workspace_id' => $request->workspace_id], $request->tags);
+        return $this->noteService->createNote($request->validated(), $request->tags);
     }
 
     /**
@@ -55,7 +55,27 @@ class NoteController extends Controller
      */
     public function show(Request $request)
     {
-        return $this->noteService->getPublicNotes($request);
+        $notes = $this->noteService->getPublicNotes($request);
+        $user = Auth::user();
+
+        if ($user) {
+            $notes->getCollection()->transform(function ($note) use ($user) {
+                $vote = $note->votes()->where('user_id', $user->id)->first();
+                $note->user_vote = $vote ? $vote->vote : null;
+                return $note;
+            });
+        }
+
+        return $notes;
+    }
+
+    /**
+     * Display a single note.
+     */
+    public function showNote(Note $note)
+    {
+        $this->authorizeNote($note);
+        return $note->load(['tags', 'workspace']);
     }
 
     /**
@@ -104,6 +124,7 @@ class NoteController extends Controller
 
     private function authorizeNote(Note $note) {
         $user = Auth::user();
-        if ($note->workspace->company_id !== $user->company_id) abort(403);
+        if (!$user) abort(401);
+        if (!$note->workspace || $note->workspace->company_id !== $user->company_id) abort(403);
     }
 }

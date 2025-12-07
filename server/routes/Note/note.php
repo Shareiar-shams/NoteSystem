@@ -7,6 +7,7 @@ Route::controller(NoteController::class)->prefix('/notes')->group(function () {
     Route::get('/', 'index');
     Route::get('/private', 'private');
     Route::post('/create', 'create');
+    Route::get('/{note}', 'showNote');
     Route::put('/{note}', 'update');
     Route::delete('/{note}', 'destroy');
     Route::get('/{note}/history', 'history');

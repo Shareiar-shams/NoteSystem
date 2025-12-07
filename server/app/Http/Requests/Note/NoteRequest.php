@@ -26,6 +26,7 @@ class NoteRequest extends FormRequest
             'content' => 'required|string',
             'type' => 'required|in:public,private',
             'is_draft' => 'boolean',
+            'workspace_id' => 'required|exists:workspaces,id',
             'tags' => 'array',
         ];
     }
