@@ -63,15 +63,15 @@ const PublicNotes = () => {
           const updatedNote = { ...note };
           // Adjust counts based on vote change
           if (currentVote === 'up' && newVoteType === 'down') {
-            updatedNote.upvotes_count = (updatedNote.upvotes_count || 0) - 1;
-            updatedNote.downvotes_count = (updatedNote.downvotes_count || 0) + 1;
+            updatedNote.upvotes = (updatedNote.upvotes || 0) - 1;
+            updatedNote.downvotes = (updatedNote.downvotes || 0) + 1;
           } else if (currentVote === 'down' && newVoteType === 'up') {
-            updatedNote.upvotes_count = (updatedNote.upvotes_count || 0) + 1;
-            updatedNote.downvotes_count = (updatedNote.downvotes_count || 0) - 1;
+            updatedNote.upvotes = (updatedNote.upvotes || 0) + 1;
+            updatedNote.downvotes = (updatedNote.downvotes || 0) - 1;
           } else if (!currentVote && newVoteType === 'up') {
-            updatedNote.upvotes_count = (updatedNote.upvotes_count || 0) + 1;
+            updatedNote.upvotes = (updatedNote.upvotes || 0) + 1;
           } else if (!currentVote && newVoteType === 'down') {
-            updatedNote.downvotes_count = (updatedNote.downvotes_count || 0) + 1;
+            updatedNote.downvotes = (updatedNote.downvotes || 0) + 1;
           }
           return updatedNote;
         }
@@ -91,15 +91,15 @@ const PublicNotes = () => {
             const revertedNote = { ...note };
             // Revert counts
             if (currentVote === 'up' && newVoteType === 'down') {
-              revertedNote.upvotes_count = (revertedNote.upvotes_count || 0) + 1;
-              revertedNote.downvotes_count = (revertedNote.downvotes_count || 0) - 1;
+              revertedNote.upvotes = (revertedNote.upvotes || 0) + 1;
+              revertedNote.downvotes = (revertedNote.downvotes || 0) - 1;
             } else if (currentVote === 'down' && newVoteType === 'up') {
-              revertedNote.upvotes_count = (revertedNote.upvotes_count || 0) - 1;
-              revertedNote.downvotes_count = (revertedNote.downvotes_count || 0) + 1;
+              revertedNote.upvotes = (revertedNote.upvotes || 0) - 1;
+              revertedNote.downvotes = (revertedNote.downvotes || 0) + 1;
             } else if (!currentVote && newVoteType === 'up') {
-              revertedNote.upvotes_count = (revertedNote.upvotes_count || 0) - 1;
+              revertedNote.upvotes = (revertedNote.upvotes || 0) - 1;
             } else if (!currentVote && newVoteType === 'down') {
-              revertedNote.downvotes_count = (revertedNote.downvotes_count || 0) - 1;
+              revertedNote.downvotes = (revertedNote.downvotes || 0) - 1;
             }
             return revertedNote;
           }
@@ -148,8 +148,8 @@ const PublicNotes = () => {
                       <small className="text-muted">Workspace: {note.workspace.name}</small><br />
                       <small className="text-muted">Tags: {note.tags.map(t => t.name).join(', ')}</small>
                     </Card.Text>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <div className="d-flex align-items-center">
+                    <div className="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                      <div className="d-flex align-items-center gap-3">
                         <FontAwesomeIcon
                           icon={userVotes[note.id] === 'down' ? faThumbsDown : faThumbsUp}
                           style={{
@@ -160,8 +160,11 @@ const PublicNotes = () => {
                           onClick={(e) => vote(note.id, e)}
                           className="me-2"
                         />
-                        <small className="text-muted">
-                          {note.upvotes || 0} 👍 {note.downvotes || 0} 👎
+                        <small className="text-success fw-bold">
+                          👍 {note.upvotes === 1 ? '1 like' : `${note.upvotes || 0} likes`}
+                        </small>
+                        <small className="text-danger fw-bold">
+                          👎 {note.downvotes === 1 ? '1 dislike' : `${note.downvotes || 0} dislikes`}
                         </small>
                       </div>
                     </div>

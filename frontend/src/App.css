@@ -109,6 +109,20 @@
   border-bottom: 1px solid #ffc107;
 }
 
+/* Vote Display Styling */
+.note-card .border-top {
+  border-top: 1px solid #e0e0e0 !important;
+  padding-top: 0.75rem;
+}
+
+.note-card small.text-success {
+  color: #28a745 !important;
+}
+
+.note-card small.text-danger {
+  color: #dc3545 !important;
+}
+
 /* Note Filter Tabs */
 .nav-tabs {
   border-bottom: 2px solid #e0e0e0;

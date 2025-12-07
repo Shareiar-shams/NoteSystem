@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Row, Col, Card, Spinner } from 'react-bootstrap';
+import { Form, Button, Row, Col, Card, Spinner, Nav } from 'react-bootstrap';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import NotesGrid from './PrivateComponents/NotesGrid';
@@ -17,6 +17,7 @@ const PrivateWorkspaces = () => {
   const [editingWorkspace, setEditingWorkspace] = useState(null);
   const [workspaceName, setWorkspaceName] = useState('');
   const [workspaceDesc, setWorkspaceDesc] = useState('');
+  const [noteFilter, setNoteFilter] = useState('all'); // 'all', 'draft', 'published'
 
   useEffect(() => {
     axios.get('/workspaces')
@@ -30,12 +31,23 @@ const PrivateWorkspaces = () => {
   const loadNotes = (workspaceId) => {
     setSelectedWorkspace(workspaceId);
     setLoadingNotes(true);
-    axios.get(`/notes/private?search=${search}`)
+    // Fetch all notes (including drafts) for workspace
+    axios.get(`/notes/private?search=${search}&workspace_id=${workspaceId}`)
       .then(res => {
         setNotes(res.data.data);
         setLoadingNotes(false);
       })
       .catch(() => setLoadingNotes(false));
+  };
+
+  // Filter notes based on selected filter
+  const getFilteredNotes = () => {
+    if (noteFilter === 'draft') {
+      return notes.filter(note => note.is_draft === true || note.is_draft === 1);
+    } else if (noteFilter === 'published') {
+      return notes.filter(note => note.is_draft === false || note.is_draft === 0);
+    }
+    return notes; // 'all'
   };
 
   const deleteNote = async (noteId) => {
@@ -263,21 +275,66 @@ const PrivateWorkspaces = () => {
       {/* Notes Section */}
       {selectedWorkspace && (
         <div className="mt-5">
-          <h4 className="mb-3">Notes in Workspace</h4>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h4 className="mb-0">Notes in Workspace</h4>
+          </div>
+          
+          {/* Note Type Filter Tabs */}
+          <Nav variant="tabs" className="mb-4" activeKey={noteFilter}>
+            <Nav.Item>
+              <Nav.Link 
+                eventKey="all" 
+                onClick={() => setNoteFilter('all')}
+                className="cursor-pointer"
+              >
+                All Notes ({notes.length})
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link 
+                eventKey="published" 
+                onClick={() => setNoteFilter('published')}
+                className="cursor-pointer"
+              >
+                Published ({notes.filter(n => !n.is_draft).length})
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link 
+                eventKey="draft" 
+                onClick={() => setNoteFilter('draft')}
+                className="cursor-pointer"
+              >
+                Drafts ({notes.filter(n => n.is_draft).length})
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+
           {loadingNotes ? (
             <div className="text-center py-5">
               <Spinner animation="border" role="status">
                 <span className="visually-hidden">Loading notes...</span>
               </Spinner>
             </div>
-          ) : notes.length === 0 ? (
+          ) : getFilteredNotes().length === 0 ? (
             <div className="alert alert-info" role="alert">
-              No notes in this workspace yet.
+              <div className="text-center">
+                <h5>
+                  {noteFilter === 'draft' && 'No draft notes yet'}
+                  {noteFilter === 'published' && 'No published notes yet'}
+                  {noteFilter === 'all' && 'No notes in this workspace yet'}
+                </h5>
+                <p className="text-muted mb-0">
+                  {noteFilter === 'draft' && 'Create a new draft note to get started'}
+                  {noteFilter === 'published' && 'Publish your draft notes to see them here'}
+                  {noteFilter === 'all' && 'Create your first note to get started'}
+                </p>
+              </div>
             </div>
           ) : (
             <Row className="g-3">
               <NotesGrid
-                notes={notes}
+                notes={getFilteredNotes()}
                 loadingNotes={loadingNotes}
                 selectedWorkspace={selectedWorkspace}
                 onDeleteNote={deleteNote}
