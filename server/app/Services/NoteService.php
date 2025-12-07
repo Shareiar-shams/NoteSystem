@@ -46,7 +46,13 @@ class NoteService
      */
     public function getPrivateNotes(Request $request, User $user): LengthAwarePaginator
     {
-        $query = Note::with(['workspace', 'tags'])->forCompany($user->company_id)->notDraft();
+        $query = Note::with(['workspace', 'tags'])->forCompany($user->company_id);
+
+        // Include drafts by default, users can filter them in frontend
+        // Only exclude drafts if specifically requested
+        if ($request->query('exclude_drafts') === 'true') {
+            $query->notDraft();
+        }
 
         if ($search = $request->query('search')) {
             $query->search($search);

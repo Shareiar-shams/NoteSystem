@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(NoteController::class)->prefix('/notes')->group(function () {
     Route::get('/', 'index');
+    Route::get('/public', 'show');
     Route::get('/private', 'private');
     Route::post('/create', 'create');
     Route::get('/{note}', 'showNote');
