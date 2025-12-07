@@ -37,11 +37,11 @@ class DatabaseSeeder extends Seeder {
             Tag::create(['name' => $name, 'slug' => Str::slug($name)]);
         }
 
-        // Seed 500,000 notes in chunks to avoid memory issues
+        // Seed 10,000 notes in chunks to avoid memory issues
         $workspaces = Workspace::all();
         $tags = Tag::all();
         $chunkSize = 1000;
-        for ($i = 0; $i < 500; $i++) { 
+        for ($i = 0; $i < 10; $i++) {
             $notes = [];
             for ($j = 0; $j < $chunkSize; $j++) {
                 $notes[] = [
