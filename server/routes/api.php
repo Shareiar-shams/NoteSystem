@@ -9,6 +9,5 @@ require __DIR__ . '/Auth/auth.php';
 // protected routes
 require __DIR__ . '/protectedRoute.php';
 
-
 // public routes
-Route::get('/notes/public', [NoteController::class, 'show']);
+require __DIR__ . '/publicRoute.php';
