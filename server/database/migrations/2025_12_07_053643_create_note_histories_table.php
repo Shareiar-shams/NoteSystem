@@ -16,9 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('previous_title');
             $table->longText('previous_content');
-            $table->timestamps();
+            $table->timestamp('changed_at')->index();
             $table->softDeletes();
-            $table->index('created_at');
         });
     }
 

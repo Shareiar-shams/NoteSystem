@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedInteger('downvotes_count')->default(0)->index();
             $table->timestamps();
             $table->softDeletes();
-            $table->index(['workspace_id','status','type']);
+            $table->index(['workspace_id','type']);
         });
     }
 
