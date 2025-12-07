@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title')->index();
             $table->longText('content');
             $table->enum('type', ['public','private'])->index();
-            $table->enum('status', ['draft','published'])->index();
+            $table->boolean('is_draft')->default(false)->index();
             $table->unsignedInteger('upvotes_count')->default(0)->index();
             $table->unsignedInteger('downvotes_count')->default(0)->index();
             $table->timestamps();

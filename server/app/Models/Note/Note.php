@@ -33,6 +33,6 @@ class Note extends Model
         'title',
         'content',
         'type',
-        'status'
+        'is_draft'
     ];
 }
