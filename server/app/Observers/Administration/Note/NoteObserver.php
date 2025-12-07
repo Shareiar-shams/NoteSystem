@@ -3,6 +3,8 @@
 namespace App\Observers\Administration\Note;
 
 use App\Models\Note\Note;
+use App\Models\NoteHistory\NoteHistory;
+use Illuminate\Support\Facades\Auth;
 
 class NoteObserver
 {
@@ -19,7 +21,13 @@ class NoteObserver
      */
     public function updated(Note $note): void
     {
-        //
+        if ($note->isDirty('content')) {
+            NoteHistory::create([
+                'note_id' => $note->id,
+                'previous_content' => $note->getOriginal('content'),
+                'user_id' => Auth::id(),
+            ]);
+        }
     }
 
     /**
